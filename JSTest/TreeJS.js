@@ -30,7 +30,7 @@ function init(){
     //init data
     var json = {
         id: "node01",
-        name: "Blizzard",
+        name: eventType,	// "Blizzard"
         data: {},
         children: [{
             id: "node013",
@@ -38,28 +38,28 @@ function init(){
             data: {},
             children: [{
                 id: "node0131",
-                name: "TianAnMen Protest",
+                name: eventName,
                 data: {},
                 children: []
             }]
-        },
+        },   
 		{
             id: "node011",
-            name: "location",
+            name: "Location",
             data: {},
             children: [{
                 id: "node0111",
-                name: "China",
+                name: countryField,
                 data: {},
                 children: []
             }, {
                 id: "node0112",
-                name: "Beijing",
+                name: stateField,
                 data: {},
                 children: []
             }, {
                 id: "node0113",
-                name: "No Province",
+                name: cityField,
                 data: {},
                 children: []
             }]
@@ -70,17 +70,17 @@ function init(){
             data: {},
             children: [{
                 id: "node0121",
-                name: "June",
+                name: monthField,
                 data: {},
                 children: []
             }, {
                 id: "node0122",
-                name: "1989",
+                name: yearField,
                 data: {},
                 children: []
             }, {
                 id: "node0123",
-                name: "3",
+                name: dayField,
                 data: {},
                 children: []
             }]

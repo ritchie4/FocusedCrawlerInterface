@@ -5,7 +5,7 @@ $(document).ready(function(){
 		'Day/Month/Year:<br />'+
 		'Crawler Type:<br />'+
 		'Search Page Limit:';
-	var locationFields = '<select name="locationField" id="locationField">'+
+	var eventTypeFields = '<select name="eventTypeField" id="eventTypeField">'+
 		'<option value="0"> </option>'+
 		'<option value="avalanche">Avalanche</option>'+
 		'<option value="blizzard">Blizzard</option>'+
@@ -61,29 +61,29 @@ $(document).ready(function(){
 	var pageLimitField = '<input type="text" name="pageLimitField" id="pageLimitField" value="10">';
 	
 	var crawlerFields = '<select name="crawlerField" id="crawlerField">'+
-		'<option value="0">Default</option>'+
-		'<option value="1">Event-Based</option>'+
+		'<option value="1">Event FC</option>'+
+		'<option value="0">FC</option>'+
 		'</select><br />'
 	
     /* Handle adding Site URL fields */
 	$('#siteDetailsContainer').append('<div id="siteDetailsLeft">'+
 		descriptionFieldLabels+
 		'</div>'+'<div id="siteDetailsRight">'+
-		locationFields+cityField+stateField+countryField+dayField+monthField+yearField+crawlerFields+pageLimitField+
+		eventTypeFields+cityField+stateField+countryField+dayField+monthField+yearField+crawlerFields+pageLimitField+
 		'</div>');
     $('#siteUrls').append('<br /><div style="clear:both"></div>Site URL: <input type="text" name="addedURL" class="addedURL">');
     $('#addInput').click( function(){
         $('#siteUrls').append('<br />Site URL: <input type="text" name="addedURL" class="addedURL">');
     });
 	
-	$('#locationField').change(function() {
+	$('#eventTypeField').change(function() {
 		if ($(this).val() === 'hurricane' || $(this).val() === 'typhoon') {
 			var n = $(this).val();
 			n = n.charAt(0).toUpperCase() + n.slice(1);  // Capitalize first letter
 			$(".nameLabel").html(n+" Name:");
 			if(!$("#siteDetailsRight #nameField").length){
 				$("#siteDetailsLeft br" ).first().after('<div class="nameLabel">'+n+' Name:</div>');
-				$("#siteDetailsRight br" ).first().after('<div class="nameValue"><input type="text" name="nameField" value="name" id="nameField" onfocus="this.value=\'\'"></div>');
+				$("#siteDetailsRight br" ).first().after('<div class="nameValue"><input type="text" name="nameField" value="" id="nameField" onfocus="this.value=\'\'"></div>');
 			}
 		}
 		else if($("#siteDetailsRight #nameField").length) {
@@ -96,7 +96,6 @@ $(document).ready(function(){
 	$('#siteUrls').delegate(".addedURL","input",function(){
 		if($(this).val() != ''){
 			$(this).css("background-color","#E0FFE7");
-			$('#siteUrls').append('<br />Site URL: <input type="text" name="addedURL" class="addedURL">');
 		}
 		else {
 			$(this).css("background-color","#FFFFFF");
@@ -108,70 +107,80 @@ $(document).ready(function(){
 	$w = ($(window).width()-$(".treeComparisonWindow").width())/2;
 	$(".treeComparisonWindow").css("top",$h);
 	$(".treeComparisonWindow").css("left",$w);
-	$("#resultHolder").delegate(".comparisonButton","click",function(){
-		window.open("JSTest/index.html");
-		/*
-		$(".treeComparisonBackground").toggle();
-		$(".treeComparisonWindow").toggle();
-		*/
-	});
-	$(".treeComparisonBackground").click(function(){
-		$(".treeComparisonBackground").toggle();
-		$(".treeComparisonWindow").toggle();
-	});
+	
 	
 	
     /* Handle AJAX fields posting */
 	var s = 1;
 	var origSpinner = "";
 	var submissionLabel = "";
+	var fieldsFilled = true;
 	$(".submitButton").click( function(){
-		$('.noSubmissionsLabel').html('');
-		$('#clearResults').attr("disabled",true);
+		//$('#clearResults').attr("disabled",true);
 	});
     $("#inputForm").on("submit", function(event) {
-		
 		event.preventDefault();
 		
-		origSpinner = "spinner"+s;
-		submissionLabel = '<div class="submission"><span class="submissionLabel">Submission '+s+'</span>';
-		$('#topHere').after(submissionLabel+'<div class="spinner '+origSpinner+'" style=""></div>');
-		
-		var inputURLValue = "";
 		var inputEventDetails = "";
-		var pageLimitField = "10";
-		var crawlerField = "0";
+		var inputURLValue = "";
+		var nameField = "";
+		if(typeof $("#nameField").val() !== "undefined"){
+			nameField = $("#nameField").val();
+		}
 		
 		// Format URLs for url text file
 		$(".addedURL").each(function(index) {
 			inputURLValue += $(this).val()+" ";
 		});
-		
+			
 		// Format event details for details text file
-		inputEventDetails = $("#locationField option:selected").text()+"\r\n"+
+		inputEventDetails = $("#eventTypeField option:selected").text()+"\r\n"+
 			$("#countryField").val()+"\r\n"+
 			$("#stateField").val()+"\r\n"+
 			$("#cityField").val()+"\r\n"+
-			$("#nameField").val()+"\r\n"+
+			nameField +"\r\n"+
 			$("#dayField option:selected").text()+"\r\n"+
 			$("#monthField option:selected").text()+"\r\n"+
 			$("#yearField option:selected").text();
+		
+		// Check if at least one of the event details was provided
+		if(/^\s*$/.test(inputURLValue)){
+			alert("You must provide at least one site URL.");
+			fieldsFilled = false;
+		}
+		else if(/^\s*$/.test(inputEventDetails)){
+			alert("You must provide at least one event detail.\n(event type, city, state, country, day, month, or year)");
+			fieldsFilled = false;
+		}
+		if(fieldsFilled){
+			$('#clearResults').attr("disabled",true);
+			$('.noSubmissionsLabel').html('');
+			origSpinner = "spinner"+s;
+			submissionLabel = '<div class="submission"><span class="submissionLabel">Submission '+s+'</span>';
+			$('#topHere').after(submissionLabel+'<div class="spinner '+origSpinner+'" style=""></div>');
 			
-		pageLimitField = $("#pageLimitField").val();
-		crawlerField = $("#crawlerField").val();
+			var pageLimitField = "10";
+			var crawlerField = "0";
+			
+			pageLimitField = $("#pageLimitField").val();
+			crawlerField = $("#crawlerField").val();
 
-		s++;
-		$.ajax({
-			type: "POST",
-			data: {id: s-1, urlInput: inputURLValue, detailInput: inputEventDetails, pageLimit: pageLimitField, crawlField: crawlerField},
-			url: "results-new.php",
-			success: function (msg) {
-				var temp = msg.substr(msg.indexOf('|')+1);
-				var id = temp.substr(0, temp.indexOf('|'));
-				$('.spinner'+id).after(msg);
-				$('.spinner'+id).toggle();
-			}
-		});
+			s++;
+			$.ajax({
+				type: "POST",
+				data: {id: s-1, urlInput: inputURLValue, detailInput: inputEventDetails, pageLimit: pageLimitField, crawlField: crawlerField},
+				url: "results-new.php",
+				success: function (msg) {
+					var temp = msg.substr(msg.indexOf('|')+1);
+					var id = temp.substr(0, temp.indexOf('|'));
+					$('.spinner'+id).after(msg);
+					$('.spinner'+id).toggle();
+				}
+			});
+		}
+		else {
+			fieldsFilled = true;
+		}
 	
     });
 	

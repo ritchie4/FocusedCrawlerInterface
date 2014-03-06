@@ -21,7 +21,7 @@ $path = "C:\Users\Tyler\Documents\StuffYouDontTouch\Classes\2014 (senior spring)
 		<!-- Input -->
 		<div style="border:1px solid #BBA6FF;width:950px;margin-left:165px;padding:15px 15px 15px 15px;">
 		<h2 style="margin:0">Focused Event Crawler</h2><br />
-		Give as much information as you know about the URL's. (all information except URL is optional)<br /><br />
+		Give as much information as you know about the URL's.<br /><br />
 		<form id="inputForm" method="post">
             <div id="siteUrls">
 				<div id="siteDetailsContainer">
@@ -46,6 +46,80 @@ $path = "C:\Users\Tyler\Documents\StuffYouDontTouch\Classes\2014 (senior spring)
 		<div class="treeComparisonBackground"></div>
 		<div class="treeComparisonWindow">
 		</div>
+		
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#resultHolder").delegate(".comparisonButton","click",function(){
+				var treeURL = $(this).parent()[0].previousSibling.nodeValue;
+				
+				var eventTypeText = "";
+				var nameFieldText = "";
+				var countryFieldText = "";
+				var stateFieldText = "";
+				var cityFieldText = "";
+				var yearFieldText = "";
+				var monthFieldText = "";
+				var dayFieldText = "";
+				
+				$.get('src/last-run-trees.txt', function(myContentFile) {
+					var lines = myContentFile.split("\r\n");
+					for(var i in lines){
+						var fields = lines[i].split("|");
+						
+						// Grab fields from textfile once we have found the matched URL
+						if(fields[0] == treeURL){
+							eventTypeText = fields[1];
+							nameFieldText = fields[2];
+							countryFieldText = fields[3];
+							stateFieldText = fields[4];
+							cityFieldText = fields[5];
+							yearFieldText = fields[6];
+							monthFieldText = fields[7];
+							dayFieldText = fields[8];
+							window.open('JSTest/index.php?eventType='+eventTypeText+'&eventName='+nameFieldText+
+								'&countryField='+countryFieldText+'&stateField='+stateFieldText+'&cityField='+cityFieldText+
+								'&monthField='+monthFieldText+'&yearField='+yearFieldText+'&dayField='+dayFieldText);
+							break;
+						}
+					}
+				}, 'text');
+			});
+			$("#resultHolder").delegate(".comparisonButtonLink","click",function(){
+				var treeURL = $(this).parent().prev().text();
+				var eventTypeText = "";
+				var nameFieldText = "";
+				var countryFieldText = "";
+				var stateFieldText = "";
+				var cityFieldText = "";
+				var yearFieldText = "";
+				var monthFieldText = "";
+				var dayFieldText = "";
+				
+				$.get('src/last-run-trees.txt', function(myContentFile) {
+					var lines = myContentFile.split("\r\n");
+					for(var i in lines){
+						var fields = lines[i].split("|");
+						
+						// Grab fields from textfile once we have found the matched URL
+						if(fields[0] == treeURL){
+							eventTypeText = fields[1];
+							nameFieldText = fields[2];
+							countryFieldText = fields[3];
+							stateFieldText = fields[4];
+							cityFieldText = fields[5];
+							yearFieldText = fields[6];
+							monthFieldText = fields[7];
+							dayFieldText = fields[8];
+							window.open('JSTest/index.php?eventType='+eventTypeText+'&eventName='+nameFieldText+
+								'&countryField='+countryFieldText+'&stateField='+stateFieldText+'&cityField='+cityFieldText+
+								'&monthField='+monthFieldText+'&yearField='+yearFieldText+'&dayField='+dayFieldText);
+							break;
+						}
+					}
+				}, 'text');
+			});
+		});
+	</script>
 	</body>
 </html>
 

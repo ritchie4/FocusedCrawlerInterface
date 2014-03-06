@@ -91,7 +91,7 @@ input.submitButton{
 
 /* Tree Comparison popup CSS */
 
-.treeComparisonButton{
+.treeComparisonButton, .treeComparisonButtonLink{
 	float: right;
 }
 
